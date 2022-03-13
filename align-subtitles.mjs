@@ -15,7 +15,7 @@ program.parse(process.argv);
 const options = program.opts();
 
 console.log(`search all subtitles in ${options.subtitles}`);
-let subtitles = glob.sync('**/*.+(ass|srt)', {
+let subtitles = glob.sync('**/*.+(ass|srt|smi)', {
   absolute: true,
   cwd: options.subtitles,
 });
@@ -29,15 +29,17 @@ let videos = glob.sync('**/*.+(mkv|mp4)', {
 console.log('found', videos.length);
 
 function extractEpisode(name) {
-  return /(S|s)\d+(E|e)\d+/.exec(name)[0].toUpperCase();
+  const [, s, e] = /s(\d+)\s*e(\d+)/i.exec(name);
+  return Number(s) * 10000 + Number(e);
 }
 
 console.log('extract episode info on subtitles');
 const keyedSubs = subtitles.reduce((g, c) => ({ ...g, [extractEpisode(c)]: c }), {});
+// console.log(keyedSubs);
 
 console.log('extract episode info on videos');
 const keyedVids = videos.reduce((g, c) => ({ ...g, [extractEpisode(c)]: c }), {});
-
+// console.log(keyedVids);
 // const epsWithoutSub = Object.entries(keyedEps).filter(([k]) => !keyedSubs[k]);
 // console.log(epsWithoutSub);
 

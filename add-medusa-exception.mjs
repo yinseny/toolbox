@@ -25,6 +25,7 @@ if (options.copy) {
 const db = await open({ filename, driver: sqlite3.Database });
 
 const exceptions = await db.all('SELECT * from scene_exceptions');
+console.log('found', exceptions.length, 'existing scene exceptions');
 
 const sql =
   'INSERT INTO scene_exceptions (indexer, series_id, title, season, custom) ' +
@@ -32,6 +33,8 @@ const sql =
 const statement = await db.prepare(sql);
 
 const shows = await db.all('SELECT * from tv_shows');
+console.log('found', shows.length, 'existing shows');
+
 for (const { indexer, indexer_id } of shows) {
   if (indexer === 4) {
     const url = `https://api.themoviedb.org/3/tv/${indexer_id}`;
@@ -50,4 +53,5 @@ for (const { indexer, indexer_id } of shows) {
   }
 }
 
+await statement.finalize();
 await db.close();

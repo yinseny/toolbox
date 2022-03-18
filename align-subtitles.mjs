@@ -6,16 +6,16 @@ import { basename, dirname, extname, join } from 'path';
 program.version('0.0.1');
 
 program
-  .option('-d --do', 'really do it')
   .requiredOption('-s, --subtitles <folder>', 'subtitle folder')
-  .requiredOption('-v, --videos <folder>', 'video folder');
+  .requiredOption('-v, --videos <folder>', 'video folder')
+  .option('-p, --pattern <pattern>', 'pattern')
+  .option('-d --do', 'really do it');
 
 program.parse(process.argv);
 
 const options = program.opts();
-
 console.log(`search all subtitles in ${options.subtitles}`);
-let subtitles = glob.sync('**/*.+(ass|srt|smi)', {
+let subtitles = glob.sync(`**/${options.pattern || '*'}.+(ass|srt|smi)`, {
   absolute: true,
   cwd: options.subtitles,
 });
